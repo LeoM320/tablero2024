@@ -3,7 +3,7 @@
  * @author MEOLANS, Leandro Tomás (meolansleandrotomas@outlook.com)
  * @brief Firmware para tablero de voley
  * @version 0.1
- * @date 05-12-2024
+ * @date 12-12-2024
  * 
  * @copyright Copyright (c) 2024
  * 
@@ -11,7 +11,7 @@
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#define VERSION "05-12-2024-TABLERO-V0.1"
+#define VERSION "12-12-2024-TABLERO-V0.1"
 
 /*
 * Definición de Hardware
