@@ -2,8 +2,8 @@
  * @file main.cpp
  * @author MEOLANS, Leandro Tomás (meolansleandrotomas@outlook.com)
  * @brief Firmware para tablero de voley
- * @version 0.1
- * @date 12-12-2024
+ * @version 0.2
+ * @date 13-12-2024
  * 
  * @copyright Copyright (c) 2024
  * 
@@ -11,7 +11,7 @@
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#define VERSION "12-12-2024-TABLERO-V0.1"
+#define VERSION "13-12-2024-TABLERO-V0.2"
 
 /*
 * Definición de Hardware
@@ -166,6 +166,10 @@ uint8_t etapaSets=0; //Contador circular multiplexacion [0-2]
 uint8_t digitos[4]={0}; //Dl, Ul, Dv, Uv - Decenas y unidades
 uint8_t sets[3]={0}; //Valor de sets
 uint8_t iterar=0; //Contador de iteración
+uint8_t puntosMinimos=0; //Almacenamiento de puntos minimos
+uint8_t mask=0; //Mascara de bits
+uint8_t segmentosActivos=0; //Configuracion de bits para segmentos
+int8_t aux=0; //Variable auxiliar para invertir
 
 SoftwareSerial mySerial(0, A6); // RX, TX
 
@@ -202,7 +206,7 @@ void SetearDigitoPuntos(uint8_t numero,uint8_t anodo) {
    * @brief Enciende los segmentos segun los bits
    * que corresponden al numero
    */
-  uint8_t segmentosActivos = segmentos[numero];
+  segmentosActivos = segmentos[numero];
   digitalWrite(PIN.SEG.A, (segmentosActivos & 0x40) >> 6);
   digitalWrite(PIN.SEG.B, (segmentosActivos & 0x20) >> 5);
   digitalWrite(PIN.SEG.C, (segmentosActivos & 0x10) >> 4);
@@ -226,7 +230,7 @@ void SetearDigitoPuntos(uint8_t numero,uint8_t anodo) {
      * y apaga los demas. Se usa un bit desplazado
      * el valor del anodo
      */
-    uint8_t mask = 0x08 >> anodo;
+    mask = 0x08 >> anodo;
     digitalWrite(PIN.ANODO.P1, ((mask & 0x08) >> 3));
     digitalWrite(PIN.ANODO.P2, ((mask & 0x04) >> 2));
     digitalWrite(PIN.ANODO.P3, ((mask & 0x02) >> 1));
@@ -251,7 +255,7 @@ void SetearDigitoSets(uint8_t numero,uint8_t anodo) { //Chequear
      * y apaga los demas. Se usa un bit desplazado
      * el valor del anodo
      */
-    uint8_t mask = 0x04 >> anodo;
+    mask = 0x04 >> anodo;
     digitalWrite(PIN.ANODO.S1, ((mask & 0x04) >> 2));
     digitalWrite(PIN.ANODO.S2, ((mask & 0x02) >> 1));
     digitalWrite(PIN.ANODO.S3, ((mask & 0x01) >> 0));
@@ -300,7 +304,7 @@ void Multiplexar() {
 }
 
 void Invertir(){
-  int8_t aux = punto.local;
+  aux = punto.local;
   punto.local = punto.visitante;
   punto.visitante = aux;
 
@@ -443,7 +447,7 @@ void Estado_2_Juego() {
    * 15 con diferencia de 2.
    * Ganará el equipo que logre anotar 3 sets
    */
-  uint8_t puntosMinimos = (set.general != 5) ? 25 : 15;
+  puntosMinimos = (set.general != 5) ? 25 : 15;
   if (punto.local >= puntosMinimos && (punto.local - punto.visitante) >= 2) {
     //GANADOR LOCAL
     set.local++;
